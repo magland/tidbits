@@ -48,13 +48,13 @@ opts.SCRIPTS.push(
 //////////////////////////////////////////////////////////////////////
 opts.TARGET = 'index.html';
 opts.SCRIPTS.push(
-	'tidbits_main.js'
+	'tidbits_main.js','mda.js'
 );
 //opts.STYLESHEETS.push('create.css');
 
 opts.SOURCEPATH.push('widgets')
 opts.SCRIPTS.push(
-	'tbmainwindow.js'
+	'tbmainwindow.js','tabberframe.js','tabber.js'
 );
 opts.STYLESHEETS.push(
 	'tbmainwindow.css'
@@ -62,7 +62,12 @@ opts.STYLESHEETS.push(
 
 opts.SOURCEPATH.push('managers')
 opts.SCRIPTS.push(
-	'tbmanager.js'
+	'tbmanager.js','mvcontext.js'
+);
+
+opts.SOURCEPATH.push('views')
+opts.SCRIPTS.push(
+	'mvabstractview.js','mvpanelwidget.js','mvtemplatesview.js'
 );
 
 //////////////////////////////////////////////////////////////////////

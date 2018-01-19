@@ -60,7 +60,13 @@ function load_config(config_id,callback) {
             callback(tmp.object.error);
             return;
         }
-        callback(null,tmp.object.config);
+        var config_obj=try_parse_json(tmp.object.config);
+        if (!config_obj) {
+            console.log (tmp.object);
+            callback('Error parsing config string.');
+            return;
+        }
+        callback(null,config_obj);
     });
 }
 
