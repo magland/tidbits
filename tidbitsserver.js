@@ -6,12 +6,9 @@ Set the following environment variables
    KBUCKET_URL
 */
 
-if (!process.env.MONGODB_URI) {
-	console.error('The following environment variable needs to be set: MONGODB_URI');
-	process.exit(-1);
-}
-
 require('./log.js');
+
+var m_configurations={};
 
 var app = express();
 app.set('port', (process.env.PORT || 5092));
@@ -76,47 +73,63 @@ app.use(function(req,resp,next) {
 });
 app.use(express.static(__dirname+'/web'));
 
+app.listen(app.get('port'), function() {
+	console.info('tidbits is running on port '+app.get('port'), {port:app.get('port')});
+});
+
 function handle_api_request(path,query,headers,cb) {
 	console.info('handle_api_request: '+path,{query:query});
-		if (path=='/api/setConfig') {
-			handle_api_set_config(query,function(R) {
-				cb(R);
-			});
-		}
-		else if (path=='/api/getConfig') {
-			handle_api_get_config(query,function(R) {
-				cb(R);
-			});
-		}
-		else {
-			cb({success:false,error:'Invalid path.'});
-		}
+	if (path=='/api/setConfig') {
+		handle_api_set_config(query,function(R) {
+			cb(R);
+		});
+	}
+	else if (path=='/api/getConfig') {
+		handle_api_get_config(query,function(R) {
+			cb(R);
+		});
+	}
+	else if (path=='/api/getKBucketUrl') {
+		handle_api_get_kbucket_url(query,function(R) {
+			cb(R);
+		});
+	}
+	else {
+		cb({success:false,error:'Invalid path.'});
+	}
 
-		function handle_api_set_config(query,callback) {
-			if (!query.config) {
-				callback({success:false,error:'Missing query parameter: config'});
-				return;
-			}
-			var id=make_random_id(10);
-			m_configurations[id]={
-				timestamp:new Date(),
-				id:id,
-				config:query.config
-			};
-			callback({success:true,id:id});
+	function handle_api_set_config(query,callback) {
+		if (!query.config) {
+			callback({success:false,error:'Missing query parameter: config'});
+			return;
 		}
-		function handle_api_get_config(query,callback) {
-			if (!query.id) {
-				callback({success:false,error:'Missing query parameter: id'});
-				return;
-			}
-			if (!m_configurations[id]) {
-				callback({success:false,error:'Not found (id='+id+')'});
-				return;
-			}
-			callback({success:true,config:m_configurations[id].config});
+		var id=make_random_id(10);
+		m_configurations[id]={
+			timestamp:new Date(),
+			id:id,
+			config:query.config
+		};
+		callback({success:true,id:id});
+	}
+	function handle_api_get_config(query,callback) {
+		if (!query.id) {
+			callback({success:false,error:'Missing query parameter: id'});
+			return;
 		}
-	});
+		if (!m_configurations[query.id]) {
+			callback({success:false,error:'Not found (id='+query.id+')'});
+			return;
+		}
+		callback({success:true,config:m_configurations[query.id].config});
+	}
+	function handle_api_get_kbucket_url(query,callback) {
+		var url=process.env.KBUCKET_URL;
+		if (!url) {
+			callback({success:false,error:'Environment variable not set: KBUCKET_URL'});
+			return;
+		}
+		callback({success:true,url:url});
+	}
 }
 
 function send_json_response(resp,obj) {
