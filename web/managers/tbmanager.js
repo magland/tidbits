@@ -25,6 +25,7 @@ function TBManager(O) {
     return create_view(i,config0);
   }
   function create_view(i,config0) {
+    var kbucket_url='https://river.simonsfoundation.org';
     var ret={};
     var default_position='north';
     if (Number(i)%2==1) default_position='south';
@@ -34,7 +35,16 @@ function TBManager(O) {
       var W=new MVTemplatesView(null,m_context);
       var templates=config0.templates;
       if (templates.prv) {
-        W.setTemplatesUrl('https://river.simonsfoundation.org/download/'+templates.prv.original_checksum);
+        W.setTemplatesUrl(kbucket_url+'/download/'+templates.prv.original_checksum);
+      }
+      ret.widget=W;
+    }
+    else if (config0.image) {
+      ret.label=config0.label||'Image';
+      var W=new ImageView(null);
+      var image=config0.image;
+      if (image.prv) {
+        W.setImageUrl(kbucket_url+'/download/'+image.prv.original_checksum);
       }
       ret.widget=W;
     }
