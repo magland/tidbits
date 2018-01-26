@@ -37,14 +37,38 @@ function jsqmain(query) {
         console.log (config);
         show_full_browser_message('','');
 
-        var manager=new TBManager();
-        manager.setConfig(config);
+        load_kbucket_url(function(err,kbucket_url) {
+            if (err) {
+                show_full_browser_message('Tidbits','Error loading kbucket_url: '+err);
+                return;
+            }
+            var manager=new TBManager();
+            manager.setConfig(config);
+            manager.setKBucketUrl(kbucket_url);
 
-        var X=new TBMainWindow();
-        X.setTBManager(manager);
-        X.showFullBrowser();
+            var X=new TBMainWindow();
+            X.setTBManager(manager);
+            X.showFullBrowser();
+        });
+
+        
     });
 }
+
+function load_kbucket_url(callback) {
+    jsu_http_get_json('api/getKBucketUrl',{},function(tmp) {
+        if (!tmp.success) {
+            callback(tmp.error);
+            return;
+        }
+        if (!tmp.object.success) {
+            callback(tmp.object.error);
+            return;
+        }
+        callback(null,tmp.object.kbucket_url);
+    });
+}
+
 
 function load_config(config_id,callback) {
     if (!config_id) {

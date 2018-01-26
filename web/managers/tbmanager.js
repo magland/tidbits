@@ -3,11 +3,13 @@ function TBManager(O) {
   JSQObject(O);
 
 	this.setConfig=function(X) {setConfig(X);};
+  this.setKBucketUrl=function(url) {m_kbucket_url=url;};
   this.viewCount=function() {return viewCount();};
   this.view=function(i) {return view(i);};
 
   var m_config={};
   var m_context=new MVContext();
+  var m_kbucket_url='';
 
   function setConfig(X) {
     if (JSON.stringify(X)==JSON.stringify(m_config)) return;
@@ -25,7 +27,7 @@ function TBManager(O) {
     return create_view(i,config0);
   }
   function create_view(i,config0) {
-    var kbucket_url='https://river.simonsfoundation.org';
+    var kbucket_url=m_kbucket_url;
     var ret={};
     var default_position='north';
     if (Number(i)%2==1) default_position='south';

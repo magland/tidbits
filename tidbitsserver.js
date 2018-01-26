@@ -128,7 +128,7 @@ function handle_api_request(path,query,headers,cb) {
 			callback({success:false,error:'Environment variable not set: KBUCKET_URL'});
 			return;
 		}
-		callback({success:true,url:url});
+		callback({success:true,kbucket_url:url});
 	}
 }
 
