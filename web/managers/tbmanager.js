@@ -33,7 +33,7 @@ function TBManager(O) {
     if (Number(i)%2==1) default_position='south';
     ret.position=config0.position||default_position;
     if (config0.templates) {
-      ret.label=config0.label||'Templates';
+      ret.label=config0.label||'*** Templates ***';
       var W=new MVTemplatesView(null,m_context);
       var templates=config0.templates;
       if (templates.prv) {
