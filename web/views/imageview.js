@@ -3,8 +3,9 @@ function ImageView(O,context) {
 	MVAbstractView(O,context);
 	O.div().addClass('ImageView');
 
-	this.setImage=function(image) {return setImage(image);};
-	this.setImageUrl=function(url) {m_image_url=url;};
+    this.getImage=function() {return m_image;};
+    this.setImage=function(image) {return setImage(image);};
+    this.setImageUrl=function(url) {m_image_url=url;};
 
 	O.prepareCalculation=function() {prepareCalculation();};
 	O.runCalculation=function(opts,callback) {runCalculation(opts,callback);};

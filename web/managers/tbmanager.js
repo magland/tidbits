@@ -43,7 +43,7 @@ function TBManager(O) {
     }
     else if (config0.image) {
       ret.label=config0.label||'Image';
-      var W=new ImageView(null);
+      var W=new ImageTab(ret.label,null);
       var image=config0.image;
       if (image.prv) {
         W.setImageUrl(kbucket_url+'/download/'+image.prv.original_checksum);

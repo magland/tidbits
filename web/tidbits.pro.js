@@ -68,7 +68,7 @@ opts.SCRIPTS.push(
 opts.SOURCEPATH.push('views')
 opts.SCRIPTS.push(
 	'mvabstractview.js','mvpanelwidget.js','mvtemplatesview.js',
-	'imageview.js'
+    'imageview.js','imagetab.js','imageinfo.js'
 );
 
 //////////////////////////////////////////////////////////////////////
