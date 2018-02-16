@@ -9,7 +9,10 @@ function ImageTab(label,O) {
     var m_imageInfo=new ImageInfo(null);
     m_imageInfo.setParent(O);
 
-    var m_imageViewWidthFraction=0.75;
+    JSQ.connect(m_imageView,'coordSelected',m_imageInfo,
+                function(sender,args) {m_imageInfo.setPixelInfo(args);});
+
+    var m_imageViewWidthFraction=0.9;
 
     this.setImageUrl=function(url) {return m_imageView.setImageUrl(url);};
     this.recalculate=function() {return m_imageView.recalculate();};

@@ -58,6 +58,8 @@ function ImageView(O,context) {
 		m_panel_widget.clearPanels();
 		m_image_panels=[];
 		var P=new ImagePanel();
+        JSQ.connect(P,'coordSelected',O,
+                    function(sender,args) {O.emit('coordSelected',args);});
 		P.setImage(m_image);
 		m_image_panels.push(P);
 		m_panel_widget.addPanel(0,0,P);
@@ -78,6 +80,7 @@ function ImageView(O,context) {
 		update_scale_factors();
 		*/
 	}
+
 	function panelClicked(ind,modifiers) {
 		if (ind in m_image_panels) {
 			//O.mvContext().clickCluster(m_template_panels[ind].property('k'),modifiers);
@@ -134,7 +137,19 @@ function ImagePanel(O) {
 
 	this.setImage=function(image) {m_image=image; O.update();};
 
+    this.onMousePress(function (evt) {
+        var coord = pix2coord(evt.pos);
+
+        if (coord)
+            selectCoord(coord);
+        else
+            deselectCoord();
+
+    });
+
 	var m_image=null;
+    var m_selectedCoord=null;
+    var m_selectedCoordColor='deepskyblue';
 
 	O.onPaint(paint);
 
@@ -145,13 +160,20 @@ function ImagePanel(O) {
 			var minval=m_image.minimum();
 			var maxval=m_image.maximum();
 			for (var y=0; y<m_image.N2(); y++) {
-				for (var x=0; x<m_image.N1(); x++) {
-					var val=m_image.value(x,y);
-					var p1=coord2pix([x-0.5,y-0.5]);
-					var p2=coord2pix([x+0.5,y+0.5]);
-					var col=val2col((val-minval)/(maxval-minval));
-					painter.fillRect(p1[0],p1[1],p2[0]-p1[0]+1,p2[1]-p1[1]+1,col);
-				}
+                for (var x=0; x<m_image.N1(); x++) {
+                    var val=m_image.value(x,y);
+                    var p1=coord2pix([x-0.5,y-0.5]);
+                    var p2=coord2pix([x+0.5,y+0.5]);
+                    var col;
+                    if (m_selectedCoord
+                        && m_selectedCoord[0] == x
+                        && m_selectedCoord[1] == y) {
+                        col = m_selectedCoordColor
+                    } else {
+                        col = val2col((val-minval)/(maxval-minval));
+                    }
+                    painter.fillRect(p1[0],p1[1],p2[0]-p1[0]+1,p2[1]-p1[1]+1,col);
+                }
 			}
 		}
 		else {
@@ -201,6 +223,58 @@ function ImagePanel(O) {
     	var y0=m_template_rect[1]+margy+pcty*(m_template_rect[3]-margy*2);
     	return [x0,y0];
     	*/
+    }
+
+    function pix2coord(pix) {
+        if (!m_image) return undefined;
+
+        var px=pix[0];
+        var py=pix[1];
+        var W=O.width();
+        var H=O.height();
+        var N1=m_image.N1();
+        var N2=m_image.N2();
+
+        var W0,H0;
+        if (W*N2>H*N1) {
+            W0=H*N1/N2;
+            H0=H;
+        }
+        else {
+            W0=W;
+            H0=W*N2/N1;
+        }
+        var xoffset=(W-W0)/2;
+        var yoffset=(H-H0)/2;
+
+        var cx=Math.floor(N1*(px-xoffset)/W0 - 0.5);
+        var cy=Math.floor(N2*(py-yoffset)/H0 - 0.5);
+
+        if (0 <= cx && cx <= N1
+            && 0 <= cy && cy <= N2) {
+            return [cx, cy];
+        } else {
+            return undefined;
+        }
+    }
+
+    function selectCoord(coord) {
+        m_selectedCoord = coord;
+        O.update();
+        var data = {};
+        data.x = coord[0];
+        data.y = coord[1];
+        data.value = m_image.value(data.x, data.y);
+        O.emit('coordSelected', data);
+    }
+
+    function deselectCoord() {
+        if (m_selectedCoord) {
+            m_selectedCoord = null;
+            O.update();
+        }
+
+        O.emit('coordSelected', null);
     }
 }
 
